@@ -1,0 +1,240 @@
+/* =====================================================
+   FINANCE KIT — Global Design System
+   ===================================================== */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap');
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  background-color: #030305;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+#root { min-height: 100vh; width: 100%; }
+
+h1, h2, h3, h4 {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #08090f; }
+::-webkit-scrollbar-thumb { background: #1e2030; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2d40; }
+
+/* ===== SHARED COMPONENTS ===== */
+
+/* Card */
+.fk-card {
+  background: #10111c;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  padding: 24px;
+  transition: border-color 0.2s ease;
+}
+.fk-card:hover { border-color: rgba(255,255,255,0.13); }
+
+/* Buttons */
+.fk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: none;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  padding: 11px 20px;
+}
+
+.fk-btn-primary {
+  background: #ff4d6d;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255,77,109,0.35);
+}
+.fk-btn-primary:hover:not(:disabled) {
+  background: #ff6b85;
+  box-shadow: 0 6px 24px rgba(255,77,109,0.5);
+  transform: translateY(-1px);
+}
+.fk-btn-primary:active:not(:disabled) { transform: translateY(0); }
+.fk-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fk-btn-ghost {
+  background: transparent;
+  color: #a0a3b1;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.fk-btn-ghost:hover {
+  background: #141520;
+  border-color: rgba(255,255,255,0.14);
+  color: #fff;
+}
+
+.fk-btn-success {
+  background: #4ade80;
+  color: #030305;
+  box-shadow: 0 4px 14px rgba(74,222,128,0.25);
+}
+.fk-btn-success:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.fk-btn-danger {
+  background: rgba(255,77,109,0.12);
+  color: #ff8a80;
+  border: 1px solid rgba(255,77,109,0.22);
+}
+.fk-btn-danger:hover { background: rgba(255,77,109,0.2); }
+
+/* Input */
+.fk-input {
+  width: 100%;
+  padding: 12px 15px;
+  background: #0d0e17;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  color: #fff;
+  transition: all 0.18s ease;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.fk-input:hover { border-color: rgba(255,255,255,0.14); }
+.fk-input:focus {
+  border-color: #ff4d6d;
+  box-shadow: 0 0 0 3px rgba(255,77,109,0.14);
+  background: #0a0b13;
+}
+.fk-input::placeholder { color: #3a3d52; }
+
+select.fk-input option { background: #0d0e17; color: #fff; }
+
+/* Label */
+.fk-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b6e85;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Badges */
+.fk-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fk-badge-income  { background: rgba(74,222,128,0.14); color: #4ade80; }
+.fk-badge-expense { background: rgba(255,138,128,0.14); color: #ff8a80; }
+
+/* Stat card */
+.fk-stat {
+  background: #10111c;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px;
+  padding: 20px 22px;
+  transition: all 0.18s ease;
+}
+.fk-stat:hover {
+  border-color: rgba(255,255,255,0.13);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.fk-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #3a3d52;
+  margin-bottom: 10px;
+}
+.fk-stat-value {
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+/* Alerts */
+.fk-alert {
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.fk-alert-error   { background: rgba(255,77,109,0.1); border: 1px solid rgba(255,77,109,0.25); color: #ff8a80; }
+.fk-alert-success { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); color: #4ade80; }
+.fk-alert-info    { background: #10111c; border: 1px solid rgba(255,255,255,0.07); color: #a0a3b1; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.anim-fadeup { animation: fadeUp 0.38s ease both; }
+.anim-fadein { animation: fadeIn 0.25s ease both; }
+
+/* Spinner */
+.fk-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Named keyframes for inline usage in JSX */
+@keyframes fk-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes fk-fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fk-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
