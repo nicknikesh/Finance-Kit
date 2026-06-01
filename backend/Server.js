@@ -15,6 +15,8 @@ app.use("/api/upload",       require("./Routes/upload"));
 app.use("/api/report",       require("./Routes/report"));
 app.use("/api/history",      require("./Routes/history"));
 app.use("/api/alerts",       require("./Routes/alerts"));
+app.use("/api/budget",       require("./Routes/budget"));
+app.use("/api/recurring",    require("./Routes/recurring"));
 
 mongoose.connect(process.env.MONGO_URL)
 .then(() => console.log("DB Connected"))

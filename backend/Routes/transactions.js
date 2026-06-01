@@ -51,22 +51,50 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// Get all with filters, search, and pagination
+// Get all with filters, search, sorting and pagination
 router.get("/", auth, async (req, res) => {
   try {
-    const { type, category, search, page = 1, limit = 20, from, to } = req.query;
+    const {
+      type, category, search,
+      page = 1, limit = 20,
+      from, to,
+      sort = "latest",        // "latest" | "oldest" | "highest" | "lowest"
+      minAmount, maxAmount,
+    } = req.query;
+
     const query = { userId: req.user.id };
 
-    if (type) query.type = type;
-    if (category) query.category = new RegExp(category, "i");
-    if (search) query.category = new RegExp(search, "i");
+    if (type && type !== "all") query.type = type;
+    if (category && category !== "all") query.category = new RegExp(category, "i");
+
+    // Full-text search across description AND category
+    if (search && search.trim()) {
+      const re = new RegExp(search.trim(), "i");
+      query.$or = [{ description: re }, { category: re }];
+    }
+
+    // Amount range
+    if (minAmount || maxAmount) {
+      query.amount = {};
+      if (minAmount) query.amount.$gte = Number(minAmount);
+      if (maxAmount) query.amount.$lte = Number(maxAmount);
+    }
 
     const dateFilter = buildDateFilter(from, to);
     if (dateFilter) query.date = dateFilter;
 
+    // Sort mapping
+    const sortMap = {
+      latest:  { date: -1 },
+      oldest:  { date:  1 },
+      highest: { amount: -1 },
+      lowest:  { amount:  1 },
+    };
+    const sortObj = sortMap[sort] || sortMap.latest;
+
     const total = await Transaction.countDocuments(query);
-    const data = await Transaction.find(query)
-      .sort({ date: -1 })
+    const data  = await Transaction.find(query)
+      .sort(sortObj)
       .skip((Number(page) - 1) * Number(limit))
       .limit(Number(limit));
 
@@ -74,15 +102,16 @@ router.get("/", auth, async (req, res) => {
       data,
       pagination: {
         total,
-        page: Number(page),
+        page:  Number(page),
         limit: Number(limit),
-        pages: Math.ceil(total / Number(limit) || 1)
-      }
+        pages: Math.max(1, Math.ceil(total / Number(limit))),
+      },
     });
   } catch (err) {
     res.status(500).json({ error: "Could not load transactions: " + err.message });
   }
 });
+
 
 // Get dashboard summary insights
 router.get("/summary", auth, async (req, res) => {

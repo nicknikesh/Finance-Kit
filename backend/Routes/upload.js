@@ -6,7 +6,8 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Transaction  = require("../models/Transaction");
 const AIReport     = require("../models/AIReport");
 const UploadHistory = require("../models/UploadHistory");
-const { generateAlerts } = require("../services/alertsService");
+const { generateAlerts }   = require("../services/alertsService");
+const { detectRecurring }  = require("../services/recurringService");
 const auth         = require("../middleware/auth");
 const { detectCategory } = require("../utils/categoryRules");
 
@@ -361,6 +362,10 @@ router.post("/", auth, upload.single("statement"), async (req, res) => {
     if (saved > 0) {
       generateAlerts(req.user.id).catch(e =>
         console.warn("[Alerts] Post-upload regeneration failed (non-fatal):", e.message)
+      );
+      // Re-run recurring detection with the new transactions
+      detectRecurring(req.user.id).catch(e =>
+        console.warn("[Recurring] Post-upload detection failed (non-fatal):", e.message)
       );
     }
 

@@ -233,8 +233,72 @@ select.fk-input option { background: #0d0e17; color: #fff; }
   100% { background-position:  200% 0; }
 }
 
+/* FAB floating animation */
+@keyframes fk-fab-float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+/* Modal spring in */
+@keyframes fk-modal-in {
+  from { opacity:0; transform: scale(0.92) translateY(20px); }
+  to   { opacity:1; transform: scale(1)    translateY(0); }
+}
+
 @keyframes slideInRight {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
 
+/* ===== TOAST ANIMATION ===== */
+@keyframes fk-toast-in {
+  from { opacity: 0; transform: translateX(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+
+/* ===== FOCUS VISIBLE (accessibility) ===== */
+:focus-visible {
+  outline: 2px solid #ff4d6d;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .fk-card { border-radius: 16px; padding: 18px; }
+  .fk-stat { border-radius: 14px; padding: 16px 18px; }
+  .fk-stat-value { font-size: 20px; }
+  .fk-btn { font-size: 13px; padding: 9px 16px; }
+}
+
+@media (max-width: 600px) {
+  .fk-card { border-radius: 14px; padding: 14px; }
+  .fk-stat { border-radius: 12px; padding: 14px 16px; }
+  .fk-stat-value { font-size: 18px; }
+  .fk-stat-label { font-size: 10px; }
+}
+
+/* ===== IMPROVED TRANSITIONS ===== */
+a, button { transition: all 0.18s ease; }
+
+/* ===== PAGE TRANSITION ===== */
+.anim-fadeup {
+  animation: fadeUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ===== LOADING PAGE PULSE ===== */
+@keyframes fk-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ===== SELECTION ===== */
+::selection { background: rgba(255,77,109,0.28); color: #fff; }
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: #fff; color: #000; }
+  .fk-card { border: 1px solid #ddd; background: #fff; }
+  header, aside, nav { display: none !important; }
+}
