@@ -1,7 +1,7 @@
 const router       = require("express").Router();
 const multer       = require("multer");
-// pdf-parse v1.1.1 — exports directly as a function
-const pdfParse     = require("pdf-parse");
+// pdf-parse: use internal path to avoid filesystem read crash on Vercel serverless
+const pdfParse     = require("pdf-parse/lib/pdf-parse.js");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const Transaction  = require("../models/Transaction");
 const AIReport     = require("../models/AIReport");

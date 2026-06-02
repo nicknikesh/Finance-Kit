@@ -5,37 +5,41 @@ require("dotenv").config();
 
 const app = express();
 
-// ── CORS — allow all Vercel deployments + localhost dev ─────────────────────
-app.use(cors({
+// ── CORS — allow all Vercel deployments + localhost ────────────────────────
+const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
-
+    if (!origin) return callback(null, true); // allow non-browser requests
     const allowed = [
-      // Local development
       /^http:\/\/localhost:\d+$/,
-      // Any Vercel deployment (production + preview URLs)
       /^https:\/\/.*\.vercel\.app$/,
     ];
-
-    const isAllowed = allowed.some(pattern => pattern.test(origin));
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked: ${origin}`));
-    }
+    if (allowed.some(p => p.test(origin))) callback(null, true);
+    else callback(new Error("CORS blocked: " + origin));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "authorization"],
-}));
+};
 
-// Handle OPTIONS preflight for all routes
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight for every route
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
-// Routes
+// ── Health check (lets you verify the function is alive) ──────────────────
+app.get("/api/health", (_req, res) => {
+  res.json({
+    status: "ok",
+    db: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+    env: {
+      mongo:  !!process.env.MONGO_URL,
+      jwt:    !!process.env.JWT_SECRET,
+      gemini: !!process.env.GEMINI_API_KEY,
+    },
+  });
+});
+
+// ── Routes ─────────────────────────────────────────────────────────────────
 app.use("/api/auth",         require("./Routes/auth"));
 app.use("/api/transactions", require("./Routes/transactions"));
 app.use("/api/upload",       require("./Routes/upload"));
@@ -45,13 +49,27 @@ app.use("/api/alerts",       require("./Routes/alerts"));
 app.use("/api/budget",       require("./Routes/budget"));
 app.use("/api/recurring",    require("./Routes/recurring"));
 
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("DB Connected"))
-  .catch(err => console.log(err));
+// ── Global error handler ───────────────────────────────────────────────────
+app.use((err, _req, res, _next) => {
+  console.error("[SERVER ERROR]", err.message);
+  res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+});
 
-// Local dev: listen on port; Vercel: export app
+// ── MongoDB (crash-safe — missing MONGO_URL won't crash the function) ──────
+if (process.env.MONGO_URL) {
+  mongoose.connect(process.env.MONGO_URL, {
+    serverSelectionTimeoutMS: 10000,
+  })
+    .then(() => console.log("DB Connected"))
+    .catch(err => console.error("DB connection failed:", err.message));
+} else {
+  console.warn("WARNING: MONGO_URL env var is not set!");
+}
+
+// ── Local dev only ─────────────────────────────────────────────────────────
 if (process.env.NODE_ENV !== "production") {
   app.listen(5000, () => console.log("Server running on port 5000"));
 }
 
-module.exports = app;
+module.exports = app;
+
