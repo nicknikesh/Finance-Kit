@@ -19,9 +19,12 @@ app.use("/api/budget",       require("./Routes/budget"));
 app.use("/api/recurring",    require("./Routes/recurring"));
 
 mongoose.connect(process.env.MONGO_URL)
-.then(() => console.log("DB Connected"))
-.catch(err => console.log(err));
+  .then(() => console.log("DB Connected"))
+  .catch(err => console.log(err));
 
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
+// Local dev: listen on port; Vercel: export app
+if (process.env.NODE_ENV !== "production") {
+  app.listen(5000, () => console.log("Server running on port 5000"));
+}
+
+module.exports = app;
