@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API } from "../utils/api";
 
 /* ── colour tokens (unchanged) ── */
 const C = {
@@ -69,7 +70,7 @@ export default function Login() {
     if (!email || !password) { setError("Please enter your email and password."); return; }
     setError(""); setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${API.auth}/login`, {
         emailOrPhone: email, password, rememberMe,
       });
       localStorage.setItem("token", res.data.token);

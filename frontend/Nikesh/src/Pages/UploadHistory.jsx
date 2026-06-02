@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { API } from "../utils/api";
 
 const PAGE_SIZE = 10;
 
@@ -63,7 +64,7 @@ function TransactionDrawer({ record, onClose, token }) {
     if (!record) return;
     setLoading(true);
     setError("");
-    axios.get(`http://localhost:5000/api/history/${record._id}/transactions`, {
+    axios.get(`${API.history}/${record._id}/transactions`, {
       headers: { authorization: `Bearer ${token}` },
     }).then(r => {
       setTxs(r.data.data || []);
@@ -244,7 +245,7 @@ export default function UploadHistory() {
       if (from)          params.set("from", from);
       if (to)            params.set("to", to);
 
-      const r = await axios.get(`http://localhost:5000/api/history?${params}`, {
+      const r = await axios.get(`${API.history}?${params}`, {
         headers: { authorization: `Bearer ${token}` },
       });
       setRecords(r.data.data || []);
@@ -269,7 +270,7 @@ export default function UploadHistory() {
     if (!window.confirm("Remove this upload record? (Transactions will NOT be deleted.)")) return;
     setDeleting(id);
     try {
-      await axios.delete(`http://localhost:5000/api/history/${id}`, {
+      await axios.delete(`${API.history}/${id}`, {
         headers: { authorization: `Bearer ${token}` },
       });
       load(page);

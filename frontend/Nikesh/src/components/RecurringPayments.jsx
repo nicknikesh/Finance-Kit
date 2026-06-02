@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
+import { API as APIURLS } from "../utils/api";
 
-const API = "http://localhost:5000/api/recurring";
+const API = APIURLS.recurring;
 
 const fmt = n => `₹${Number(n).toLocaleString("en-IN", { minimumFractionDigits: 0 })}`;
 

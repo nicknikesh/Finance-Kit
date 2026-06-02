@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { API } from "../utils/api";
 
 // ── Score ring animation ────────────────────────────────────────────────────
 function ScoreRing({ score, label }) {
@@ -171,7 +172,7 @@ export default function AIInsights({ refreshTrigger }) {
     setLoading(true);
     setError("");
     try {
-      const url = `http://localhost:5000/api/report${force ? "?refresh=true" : ""}`;
+      const url = `${API.report}${force ? "?refresh=true" : ""}`;
       const r = await axios.get(url, { headers: { authorization: `Bearer ${token}` } });
       setData(r.data);
       setCached(r.data.cached || false);

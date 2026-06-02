@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API } from "../utils/api";
 
 export default function Profile() {
   const [profile,   setProfile]   = useState({ username:"", email:"", phone:"" });
@@ -14,7 +15,7 @@ export default function Profile() {
   useEffect(()=>{
     (async()=>{
       try{
-        const r=await axios.get("http://localhost:5000/api/auth/me",{ headers:{ authorization:`Bearer ${token}` } });
+        const r=await axios.get(`${API.auth}/me`,{ headers:{ authorization:`Bearer ${token}` } });
         setProfile({ username:r.data.username||r.data.name||"", email:r.data.email||"", phone:r.data.phoneNumber||r.data.phone||"" });
       }catch{ const s=JSON.parse(localStorage.getItem("userProfile")||"null"); if(s) setProfile(s); }
     })();
@@ -23,7 +24,7 @@ export default function Profile() {
   const saveProfile=async()=>{
     setSavingP(true);
     try{
-      await axios.put("http://localhost:5000/api/auth/me",
+      await axios.put(`${API.auth}/me`,
         { username:profile.username, email:profile.email, phoneNumber:profile.phone },
         { headers:{ authorization:`Bearer ${token}` } });
       localStorage.setItem("userProfile",JSON.stringify(profile));
@@ -37,7 +38,7 @@ export default function Profile() {
     if(passwords.newPassword!==passwords.confirmPassword) return flash("Passwords do not match.","error");
     setSavingPw(true);
     try{
-      await axios.put("http://localhost:5000/api/auth/change-password",
+      await axios.put(`${API.auth}/change-password`,
         { currentPassword:passwords.current, newPassword:passwords.newPassword, confirmPassword:passwords.confirmPassword },
         { headers:{ authorization:`Bearer ${token}` } });
       flash("Password changed.","success");

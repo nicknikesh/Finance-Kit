@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API } from "../utils/api";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -28,7 +29,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/auth/register", {
+      await axios.post(`${API.auth}/register`, {
         username: form.username, email: form.email,
         phoneNumber: form.phone, password: form.password, confirmPassword: form.confirmPassword,
       });

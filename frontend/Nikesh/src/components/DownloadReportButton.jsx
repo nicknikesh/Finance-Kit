@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { generateFinanceReport } from "../utils/generateFinanceReport";
+import { API } from "../utils/api";
 
 /**
  * DownloadReportButton
@@ -30,7 +31,7 @@ export default function DownloadReportButton({ txs = [], chartIds = [], compact 
       setStage("Fetching AI insights…");
       let aiReport = null;
       try {
-        const rr = await axios.get("http://localhost:5000/api/report", {
+        const rr = await axios.get(API.report, {
           headers: { authorization: `Bearer ${token}` },
         });
         aiReport = rr.data;
@@ -42,7 +43,7 @@ export default function DownloadReportButton({ txs = [], chartIds = [], compact 
       try {
         const now   = new Date();
         const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-        const br    = await axios.get(`http://localhost:5000/api/budget?month=${month}`, {
+        const br = await axios.get(`${API.budget}?month=${month}`, {
           headers: { authorization: `Bearer ${token}` },
         });
         budgetData = br.data;

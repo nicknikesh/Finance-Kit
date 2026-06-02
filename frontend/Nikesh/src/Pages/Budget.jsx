@@ -5,7 +5,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip, Lege
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const API = "http://localhost:5000/api/budget";
+import { API as APIURLS } from "../utils/api";
+const API = APIURLS.budget;
 
 const CATEGORIES = ["Food","Travel","Shopping","Bills","Entertainment","Health","Others"];
 const CAT_META = {

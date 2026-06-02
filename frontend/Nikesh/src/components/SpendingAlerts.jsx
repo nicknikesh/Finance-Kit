@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { API } from "../utils/api";
 
 // ── Alert type config ─────────────────────────────────────────────────────────
 const TYPE_CONFIG = {
@@ -217,8 +218,8 @@ export default function SpendingAlerts({ refreshTrigger }) {
     setError("");
     try {
       const url = forceRegen
-        ? "http://localhost:5000/api/alerts"
-        : "http://localhost:5000/api/alerts?regen=false";
+        ? API.alerts
+        : `${API.alerts}?regen=false`;
       const r = await axios.get(url, {
         headers: { authorization: `Bearer ${token}` },
       });
@@ -249,7 +250,7 @@ export default function SpendingAlerts({ refreshTrigger }) {
 
   const handleDismiss = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/alerts/${id}/dismiss`, {}, {
+      await axios.patch(`${API.alerts}/${id}/dismiss`, {}, {
         headers: { authorization: `Bearer ${token}` },
       });
       // Animate out then remove

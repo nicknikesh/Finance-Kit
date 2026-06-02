@@ -4,6 +4,7 @@ import SpendingAlerts       from "../components/SpendingAlerts";
 import RecurringPayments    from "../components/RecurringPayments";
 import DownloadReportButton from "../components/DownloadReportButton";
 import axios from "axios";
+import { API } from "../utils/api";
 import { Pie, Line, Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend,
@@ -101,7 +102,7 @@ function UploadFAB({ onSuccess }) {
     const formData = new FormData();
     formData.append("statement", file);
     try {
-      const r = await axios.post("http://localhost:5000/api/upload", formData, {
+      const r = await axios.post(API.upload, formData, {
         headers: { authorization:`Bearer ${token}`, "Content-Type":"multipart/form-data" },
       });
       setResult(r.data);
@@ -332,7 +333,7 @@ export default function Dashboard() {
   const loadTxs = useCallback(async () => {
     setLoading(true);
     try {
-      const r = await axios.get("http://localhost:5000/api/transactions?limit=500", {
+      const r = await axios.get(`${API.transactions}?limit=500`, {
         headers: { authorization:`Bearer ${token}` },
       });
       setTxs(r.data.data || []);

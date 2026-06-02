@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import axios from "axios";
+import { API } from "../utils/api";
 
 export default function StatementUpload({ onSuccess }) {
   const [dragging,  setDragging]  = useState(false);
@@ -37,7 +38,7 @@ export default function StatementUpload({ onSuccess }) {
     formData.append("statement", file);
 
     try {
-      const r = await axios.post("http://localhost:5000/api/upload", formData, {
+      const r = await axios.post(API.upload, formData, {
         headers: {
           authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

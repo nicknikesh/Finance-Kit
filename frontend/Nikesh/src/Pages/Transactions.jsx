@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
+import { API as APIURLS } from "../utils/api";
 
-const API      = "http://localhost:5000/api/transactions";
+const API      = APIURLS.transactions;
 const PG_SIZE  = 15;
 
 // ── Category metadata ─────────────────────────────────────────────────────────
