@@ -5,36 +5,38 @@ require("dotenv").config();
 
 const app = express();
 
-// ── CORS — allow all Vercel deployments + localhost ────────────────────────
+// ── 1. CORS — must be FIRST, before every route ────────────────────────────
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://finance-kit-yuoc.vercel.app";
+
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow non-browser requests
-    const allowed = [
-      /^http:\/\/localhost:\d+$/,
-      /^https:\/\/.*\.vercel\.app$/,
-    ];
-    if (allowed.some(p => p.test(origin))) callback(null, true);
-    else callback(new Error("CORS blocked: " + origin));
-  },
+  origin: [
+    FRONTEND_URL,
+    "http://localhost:5173",
+    "http://localhost:3000",
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "authorization"],
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // handle preflight for every route
 
+// ── 2. Handle preflight OPTIONS for every route ────────────────────────────
+app.options("*", cors(corsOptions));
+
+// ── 3. Body parser ─────────────────────────────────────────────────────────
 app.use(express.json({ limit: "10mb" }));
 
-// ── Health check (lets you verify the function is alive) ──────────────────
+// ── Health check ───────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     db: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
     env: {
-      mongo:  !!process.env.MONGO_URL,
-      jwt:    !!process.env.JWT_SECRET,
-      gemini: !!process.env.GEMINI_API_KEY,
+      mongo:    !!process.env.MONGO_URL,
+      jwt:      !!process.env.JWT_SECRET,
+      gemini:   !!process.env.GEMINI_API_KEY,
+      frontend: FRONTEND_URL,
     },
   });
 });
@@ -55,11 +57,9 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: err.message || "Internal server error" });
 });
 
-// ── MongoDB (crash-safe — missing MONGO_URL won't crash the function) ──────
+// ── MongoDB ────────────────────────────────────────────────────────────────
 if (process.env.MONGO_URL) {
-  mongoose.connect(process.env.MONGO_URL, {
-    serverSelectionTimeoutMS: 10000,
-  })
+  mongoose.connect(process.env.MONGO_URL, { serverSelectionTimeoutMS: 10000 })
     .then(() => console.log("DB Connected"))
     .catch(err => console.error("DB connection failed:", err.message));
 } else {
@@ -72,4 +72,3 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 module.exports = app;
-

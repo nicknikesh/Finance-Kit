@@ -1,7 +1,7 @@
-// Central API base URL
-// In production: reads from VITE_API_URL env var set in Vercel dashboard
-// In development: falls back to localhost:5000
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Central API base URL — no trailing slash
+// Production: reads VITE_API_URL set in Vercel dashboard
+// Development: falls back to localhost:5000
+const BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 export const API = {
   auth:         `${BASE}/api/auth`,
