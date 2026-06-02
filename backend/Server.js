@@ -5,7 +5,34 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+// ── CORS — allow all Vercel deployments + localhost dev ─────────────────────
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+
+    const allowed = [
+      // Local development
+      /^http:\/\/localhost:\d+$/,
+      // Any Vercel deployment (production + preview URLs)
+      /^https:\/\/.*\.vercel\.app$/,
+    ];
+
+    const isAllowed = allowed.some(pattern => pattern.test(origin));
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "authorization"],
+}));
+
+// Handle OPTIONS preflight for all routes
+app.options("*", cors());
+
 app.use(express.json());
 
 // Routes
