@@ -27,11 +27,18 @@ app.options(/.*/, cors(corsOptions));
 // ── 3. Body parser ─────────────────────────────────────────────────────────
 app.use(express.json({ limit: "10mb" }));
 
-// ── Health check ───────────────────────────────────────────────────────────
+// ── Root + Health check ────────────────────────────────────────────────────
+app.get("/", (_req, res) => {
+  res.json({ name: "Finance Kit API", status: "running" });
+});
+
 app.get("/api/health", (_req, res) => {
+  const dbState = mongoose.connection.readyState;
+  // 0=disconnected 1=connected 2=connecting 3=disconnecting
   res.json({
     status: "ok",
-    db: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+    db: dbState === 1 ? "connected" : "disconnected",
+    dbState,
     env: {
       mongo:    !!process.env.MONGO_URL,
       jwt:      !!process.env.JWT_SECRET,
