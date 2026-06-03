@@ -1,11 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const connectDB = require("./utils/connectDB");
 require("dotenv").config();
 
 const app = express();
 
-// ── 1. CORS — must be FIRST, before every route ────────────────────────────
+// ── 1. CORS — must be FIRST ────────────────────────────────────────────────
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://finance-kit-yuoc.vercel.app";
 
 const corsOptions = {
@@ -20,21 +21,29 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// ── 2. Handle preflight OPTIONS for every route ────────────────────────────
 app.options(/.*/, cors(corsOptions));
 
-// ── 3. Body parser ─────────────────────────────────────────────────────────
+// ── 2. Body parser ─────────────────────────────────────────────────────────
 app.use(express.json({ limit: "10mb" }));
 
-// ── Root + Health check ────────────────────────────────────────────────────
+// ── 3. DB middleware — awaits connection before EVERY request ──────────────
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── Root ───────────────────────────────────────────────────────────────────
 app.get("/", (_req, res) => {
   res.json({ name: "Finance Kit API", status: "running" });
 });
 
+// ── Health check ───────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
   const dbState = mongoose.connection.readyState;
-  // 0=disconnected 1=connected 2=connecting 3=disconnecting
   res.json({
     status: "ok",
     db: dbState === 1 ? "connected" : "disconnected",
@@ -64,18 +73,11 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: err.message || "Internal server error" });
 });
 
-// ── MongoDB ────────────────────────────────────────────────────────────────
-if (process.env.MONGO_URL) {
-  mongoose.connect(process.env.MONGO_URL, { serverSelectionTimeoutMS: 10000 })
-    .then(() => console.log("DB Connected"))
-    .catch(err => console.error("DB connection failed:", err.message));
-} else {
-  console.warn("WARNING: MONGO_URL env var is not set!");
-}
-
 // ── Local dev only ─────────────────────────────────────────────────────────
 if (process.env.NODE_ENV !== "production") {
-  app.listen(5000, () => console.log("Server running on port 5000"));
+  connectDB()
+    .then(() => app.listen(5000, () => console.log("Server running on port 5000")))
+    .catch(err => console.error("DB failed:", err.message));
 }
 
 module.exports = app;
